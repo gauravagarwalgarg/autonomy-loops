@@ -1,0 +1,32 @@
+{
+  "fintech": {
+    "name": "FinTech & Trading Systems",
+    "description": "Standards for high-frequency trading, banking, payment processing, and financial compliance.",
+    "industries": ["HFT", "banking", "insurance", "payments", "crypto"],
+    "skills": ["plugins/fintech/fintech-standards.md", "plugins/fintech/fintech-patterns.md"]
+  },
+  "cloud-native": {
+    "name": "Cloud Native & SaaS",
+    "description": "Patterns for Kubernetes, microservices, serverless, and cloud-native SaaS applications.",
+    "industries": ["SaaS", "PaaS", "cloud infrastructure", "serverless"],
+    "skills": ["plugins/cloud-native/cloud-native-patterns.md", "plugins/cloud-native/cloud-native-deploy.md"]
+  },
+  "embedded": {
+    "name": "Embedded & Safety-Critical",
+    "description": "Standards for RTOS, firmware, automotive, aerospace, and medical device software.",
+    "industries": ["automotive", "aerospace", "medical devices", "IoT", "industrial"],
+    "skills": ["plugins/embedded/embedded-standards.md", "plugins/embedded/embedded-safety.md"]
+  },
+  "networking": {
+    "name": "Networking & Telecom",
+    "description": "Patterns for protocol stacks, SDN, 5G, CDN, and network infrastructure.",
+    "industries": ["telecom", "CDN", "SDN", "5G", "network security"],
+    "skills": ["plugins/networking/networking-patterns.md", "plugins/networking/networking-security.md"]
+  },
+  "data-engineering": {
+    "name": "Data Engineering & ML",
+    "description": "Patterns for data pipelines, ML systems, analytics platforms, and data quality.",
+    "industries": ["ML/AI", "analytics", "data lakes", "ETL", "streaming"],
+    "skills": ["plugins/data-engineering/data-patterns.md", "plugins/data-engineering/data-quality.md"]
+  }
+}
