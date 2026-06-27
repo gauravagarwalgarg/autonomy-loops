@@ -1,0 +1,44 @@
+{
+  "requirements": {
+    "name": "Requirements",
+    "description": "Authoring, refining, and analyzing software requirements.",
+    "file": "modes/requirements.md",
+    "suggested_plugins": [],
+    "focus_areas": ["user stories", "acceptance criteria", "traceability", "gap analysis"]
+  },
+  "design": {
+    "name": "Design",
+    "description": "Architecture decisions, component design, and interface definitions.",
+    "file": "modes/design.md",
+    "suggested_plugins": ["cloud-native"],
+    "focus_areas": ["architecture", "interfaces", "trade-offs", "scalability"]
+  },
+  "code": {
+    "name": "Code",
+    "description": "Writing, refactoring, and debugging implementation code.",
+    "file": "modes/code.md",
+    "suggested_plugins": ["cloud-native", "fintech"],
+    "focus_areas": ["implementation", "refactoring", "debugging", "optimization"]
+  },
+  "test": {
+    "name": "Test",
+    "description": "Test strategy, test case design, and coverage analysis.",
+    "file": "modes/test.md",
+    "suggested_plugins": [],
+    "focus_areas": ["unit tests", "integration tests", "coverage", "property testing"]
+  },
+  "deploy": {
+    "name": "Deploy",
+    "description": "CI/CD pipelines, infrastructure, packaging, and release management.",
+    "file": "modes/deploy.md",
+    "suggested_plugins": ["cloud-native"],
+    "focus_areas": ["CI/CD", "containers", "IaC", "release"]
+  },
+  "review": {
+    "name": "Review",
+    "description": "Code review, design review, and quality assurance.",
+    "file": "modes/review.md",
+    "suggested_plugins": [],
+    "focus_areas": ["correctness", "security", "performance", "maintainability"]
+  }
+}
