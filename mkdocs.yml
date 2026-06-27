@@ -1,0 +1,209 @@
+site_name: AutonomyLoops
+# site_url is set dynamically by CI or defaults to GitHub Pages.
+# Override via MKDOCS_SITE_URL env var or --config-file-path in CI.
+site_url: !ENV [MKDOCS_SITE_URL, 'https://gauravagrawalgarg.github.io/AutonomyLoops/']
+site_description: Production-ready multi-agent orchestration framework for steering, scaling, and governing autonomous AI agents.
+site_author: AutonomyLoops Contributors
+# Primary repo link (GitHub). GitLab users: override via MKDOCS_REPO_URL env var.
+repo_url: !ENV [MKDOCS_REPO_URL, 'https://github.com/GauravAgarwalGarg/AutonomyLoops']
+repo_name: !ENV [MKDOCS_REPO_NAME, 'GauravAgarwalGarg/AutonomyLoops']
+edit_uri: !ENV [MKDOCS_EDIT_URI, 'edit/main/docs/']
+
+copyright: Copyright &copy; 2024-2026 AutonomyLoops Contributors
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  language: en
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+    - content.action.view
+    - announce.dismiss
+    - header.autohide
+
+plugins:
+  - search:
+      separator: '[\s\-\.]+'
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - tags:
+      tags_file: tags.md
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - docs/includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/GauravAgarwalGarg/AutonomyLoops
+    - icon: fontawesome/brands/gitlab
+      link: https://gitlab.com/GauravAgarwalGarg/AutonomyLoops
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/autonomy-loops/
+  generator: false
+  version:
+    provider: mike
+    default: latest
+  status:
+    new: Recently added
+    deprecated: Deprecated
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+extra_javascript:
+  - assets/javascripts/extra.js
+
+nav:
+  - Home:
+      - index.md
+      - Changelog: changelog.md
+      - Tags: tags.md
+  - Getting Started:
+      - getting-started/index.md
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quickstart.md
+      - First Agent: getting-started/first-agent.md
+      - First Pipeline: getting-started/first-pipeline.md
+  - Core Concepts:
+      - concepts/index.md
+      - Agent Loop: concepts/agent-loop.md
+      - Orchestrator: concepts/orchestrator.md
+      - State Machine: concepts/state-machine.md
+      - Steering System: concepts/steering.md
+      - Policy Engine: concepts/policy-engine.md
+  - Configuration:
+      - configuration/index.md
+      - YAML Reference: configuration/yaml-reference.md
+      - Providers: configuration/providers.md
+      - Plugins: configuration/plugins.md
+      - Team Styles: configuration/team-styles.md
+  - Roles & Modes:
+      - roles-modes/index.md
+      - Roles: roles-modes/roles.md
+      - Modes: roles-modes/modes.md
+      - Custom Roles: roles-modes/custom-roles.md
+  - Industry Plugins:
+      - plugins/index.md
+      - FinTech & HFT: plugins/fintech.md
+      - Cloud Native: plugins/cloud-native.md
+      - Embedded Systems: plugins/embedded.md
+      - Networking & Telecom: plugins/networking.md
+      - Data Engineering: plugins/data-engineering.md
+      - Creating Plugins: plugins/creating-plugins.md
+  - Integrations:
+      - integrations/index.md
+      - Observability Stack: integrations/observability.md
+      - Message Queues: integrations/message-queues.md
+      - Service Communication: integrations/service-communication.md
+      - Tracing & Metrics: integrations/tracing-metrics.md
+      - CI/CD Platforms: integrations/ci-cd.md
+      - Container Orchestration: integrations/containers.md
+  - Security:
+      - security/index.md
+      - RBAC: security/rbac.md
+      - Token Management: security/tokens.md
+      - Sandboxing: security/sandboxing.md
+      - Audit Trail: security/audit.md
+  - Deployment:
+      - deployment/index.md
+      - Docker: deployment/docker.md
+      - Kubernetes: deployment/kubernetes.md
+      - Scaling: deployment/scaling.md
+  - API Reference:
+      - api/index.md
+      - Agent: api/agent.md
+      - Orchestrator: api/orchestrator.md
+      - Providers: api/providers.md
+      - Tools: api/tools.md
+      - Policy: api/policy.md
+  - Contributing:
+      - contributing/index.md
+      - Development Setup: contributing/development.md
+      - Code Style: contributing/code-style.md
+      - Testing: contributing/testing.md
