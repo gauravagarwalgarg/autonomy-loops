@@ -1,0 +1,55 @@
+/* AutonomyLoops Custom Styles for MkDocs Material */
+
+:root {
+  --md-primary-fg-color: #7c3aed;
+  --md-primary-bg-color: #ffffff;
+  --md-accent-fg-color: #06b6d4;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #a78bfa;
+  --md-accent-fg-color: #22d3ee;
+}
+
+/* Hero section on landing page */
+.md-typeset h1 {
+  font-weight: 700;
+}
+
+/* Code block styling */
+.md-typeset code {
+  border-radius: 4px;
+}
+
+/* Grid cards */
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Mermaid diagrams */
+.mermaid {
+  margin: 1.5em 0;
+}
+
+/* Admonition tweaks */
+.md-typeset .admonition {
+  border-radius: 8px;
+}
+
+/* Status badges */
+.md-typeset .md-status--new::after {
+  content: "New";
+  background: var(--md-accent-fg-color);
+}
+
+/* Tab labels */
+.md-typeset .tabbed-labels > label {
+  font-weight: 500;
+}
