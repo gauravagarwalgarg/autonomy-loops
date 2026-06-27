@@ -1,0 +1,64 @@
+# AutonomyLoops Configuration
+# Copy to autonomy-loops.yaml and customize for your project.
+# Docs: https://github.com/GauravAgarwalGarg/AutonomyLoops/blob/main/docs/configuration.md
+
+project:
+  name: my-service
+  languages: []  # auto-detected from project files if empty
+  # Supported: python, typescript, go, rust, java, c, cpp, solidity, terraform
+
+steering:
+  mode: code            # Default mode: requirements | design | code | test | deploy | review
+  role: developer       # Default role: developer | reviewer | architect | tester | devops | security | product-owner
+  plugins: []           # Industry plugins: fintech | cloud-native | embedded | networking | data-engineering
+  styles_dir: ./styles  # Team-specific style overrides (null to disable)
+
+providers:
+  default: anthropic    # Default provider for all agents
+  
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+    default_model: claude-sonnet-4-20250514
+    # default_model: claude-opus-4-20250514  # For complex reasoning tasks
+    
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    default_model: gpt-4o
+    # base_url: https://your-azure-endpoint.openai.azure.com/  # For Azure OpenAI
+    
+  local:
+    base_url: http://localhost:11434  # Ollama default
+    default_model: llama3.1:70b
+    # base_url: http://localhost:8000  # vLLM default
+
+  # bedrock:
+  #   region: us-east-1
+  #   default_model: anthropic.claude-3-5-sonnet-20241022-v2:0
+
+policy:
+  hitl_mode: none              # none | notify | approval_required
+  max_iterations: 50           # Max agent loop iterations per task
+  cost_limit_usd: 5.00         # Per-session spending limit
+  allowed_tools:               # Tools agents can use
+    - file
+    - shell
+    - web
+    - code
+  blocked_patterns:            # Commands/patterns that are always blocked
+    - "rm -rf /"
+    - "DROP TABLE"
+    - "DROP DATABASE"
+    # - "kubectl delete"        # Uncomment to block K8s deletions
+
+telemetry:
+  enabled: true
+  exporter: console            # console | otlp | none
+  endpoint: http://localhost:4317  # OTLP collector endpoint
+  log_level: info              # debug | info | warning | error
+  audit_trail: true            # Log all agent decisions and tool calls
+  service_name: autonomy-loops
+
+security:
+  rbac_enabled: false          # Enable role-based access control
+  token_vault: env             # env | aws-secrets | vault | azure-keyvault
+  sandbox_tools: true          # Run tool calls in sandboxed subprocess

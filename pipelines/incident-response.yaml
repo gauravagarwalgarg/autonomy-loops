@@ -1,0 +1,66 @@
+# Incident Response Pipeline Automated triage and remediation
+# Analyzes an incident, identifies root cause, and proposes a fix.
+
+name: incident-response
+description: Multi-agent incident triage and resolution pipeline
+
+steps:
+  - name: triage
+    role: devops
+    mode: review
+    task: |
+      Incident alert: {context.alert_description}
+      
+      Perform initial triage:
+      1. Classify severity (P1-P4)
+      2. Identify affected systems and users
+      3. Determine blast radius
+      4. Recommend immediate mitigation (if possible)
+    tools: [shell, web]
+
+  - name: root-cause
+    role: architect
+    mode: design
+    task: |
+      Based on triage: {triage.output}
+      
+      Investigate root cause:
+      1. Analyze logs and metrics for anomalies
+      2. Identify the failing component and failure mode
+      3. Determine if this is a regression or new issue
+      4. Check recent deployments for correlation
+    depends_on: [triage]
+    tools: [shell, file]
+
+  - name: fix-proposal
+    role: developer
+    mode: code
+    task: |
+      Root cause analysis: {root-cause.output}
+      
+      Propose a fix:
+      1. Implement the minimal change to resolve the issue
+      2. Add a test that would have caught this failure
+      3. Document any required follow-up work
+    depends_on: [root-cause]
+    tools: [file, shell]
+    max_iterations: 20
+
+  - name: postmortem
+    role: architect
+    mode: review
+    task: |
+      Generate a postmortem summary:
+      
+      Triage: {triage.output}
+      Root cause: {root-cause.output}
+      Fix: {fix-proposal.output}
+      
+      Include:
+      1. Timeline of events
+      2. Root cause summary
+      3. Impact assessment
+      4. Action items to prevent recurrence
+      5. Lessons learned
+    depends_on: [fix-proposal]
+    tools: []

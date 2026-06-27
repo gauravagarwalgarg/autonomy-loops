@@ -1,0 +1,61 @@
+# CI Review Pipeline Multi-agent code review workflow
+# Runs architect analysis, security review, and code review in parallel,
+# then synthesizes a final recommendation.
+
+name: ci-review
+description: Automated multi-agent code review pipeline
+
+steps:
+  - name: analyze-changes
+    role: architect
+    mode: review
+    task: |
+      Analyze the code changes in this pull request. Identify:
+      1. Architectural impact (new dependencies, API changes, schema migrations)
+      2. Risk areas (concurrency, security, performance)
+      3. Missing test coverage
+      Provide a structured summary.
+    tools: [file, shell]
+
+  - name: security-review
+    role: security
+    mode: review
+    task: |
+      Review the code changes for security vulnerabilities:
+      - Input validation gaps
+      - Authentication/authorization issues
+      - Secrets exposure
+      - Injection vulnerabilities
+      - OWASP Top 10 violations
+      Context from analysis: {analyze-changes.output}
+    depends_on: [analyze-changes]
+    tools: [file]
+
+  - name: code-review
+    role: reviewer
+    mode: review
+    task: |
+      Perform a detailed code review focusing on:
+      - Correctness and edge cases
+      - Error handling completeness
+      - Performance implications
+      - Code readability and maintainability
+      Context from analysis: {analyze-changes.output}
+    depends_on: [analyze-changes]
+    tools: [file]
+
+  - name: synthesize
+    role: architect
+    mode: review
+    task: |
+      Synthesize the review findings into a final recommendation:
+      
+      Security findings: {security-review.output}
+      Code review findings: {code-review.output}
+      
+      Provide:
+      1. Overall verdict: APPROVE, REQUEST_CHANGES, or NEEDS_DISCUSSION
+      2. Critical issues that must be fixed
+      3. Suggested improvements (non-blocking)
+    depends_on: [security-review, code-review]
+    tools: []

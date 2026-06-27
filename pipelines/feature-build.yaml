@@ -1,0 +1,63 @@
+# Feature Build Pipeline End-to-end feature development
+# Takes a feature description and produces requirements, design, implementation, and tests.
+
+name: feature-build
+description: Multi-agent feature development pipeline
+
+steps:
+  - name: requirements
+    role: product-owner
+    mode: requirements
+    task: |
+      Given this feature request: {context.feature_description}
+      
+      Produce:
+      1. User stories with acceptance criteria
+      2. Non-functional requirements (performance, security)
+      3. Edge cases and error scenarios
+      4. Dependencies on existing systems
+    tools: [file]
+
+  - name: design
+    role: architect
+    mode: design
+    task: |
+      Design the implementation for these requirements:
+      {requirements.output}
+      
+      Produce:
+      1. Component design with interfaces
+      2. Data model changes
+      3. API contract (if applicable)
+      4. Implementation plan (ordered tasks)
+    depends_on: [requirements]
+    tools: [file]
+
+  - name: implement
+    role: developer
+    mode: code
+    task: |
+      Implement the design:
+      {design.output}
+      
+      Follow the project conventions. Write production-quality code with
+      proper error handling, type annotations, and documentation.
+    depends_on: [design]
+    tools: [file, shell]
+    max_iterations: 30
+
+  - name: test
+    role: tester
+    mode: test
+    task: |
+      Write tests for the implementation based on:
+      Requirements: {requirements.output}
+      
+      Cover:
+      1. Unit tests for business logic
+      2. Integration tests for external interfaces
+      3. Edge cases from requirements
+      4. Error path testing
+    depends_on: [implement]
+    tools: [file, shell]
+    max_iterations: 20
