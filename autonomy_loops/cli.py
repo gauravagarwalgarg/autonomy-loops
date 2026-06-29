@@ -178,3 +178,56 @@ telemetry:
 
 if __name__ == "__main__":
     main()
+
+
+# =============================================================================
+# ORBIT COMMANDS Lightweight second-brain agent skills
+# Merged from orbit/ package into the main CLI for a single entry point.
+# =============================================================================
+
+@main.command("skill")
+@click.argument("skill_name")
+@click.option("--input", "-i", "input_text", default=None, help="Input text (default: stdin)")
+@click.option("--model", "-m", default="", help="Override model")
+def skill_run(skill_name: str, input_text: str | None, model: str):
+    """Run an orbit skill (prompt template + LLM). Alias: orbit run <skill>"""
+    from orbit.runner import run_skill
+    text = input_text or (sys.stdin.read() if not sys.stdin.isatty() else "")
+    output = run_skill(skill_name, text, model)
+    click.echo(output)
+
+
+@main.command("skills")
+def skills_list():
+    """List available orbit skills."""
+    from orbit.runner import list_skills
+    list_skills()
+
+
+@main.command("plan")
+@click.argument("goal", nargs=-1, required=True)
+def plan_goal(goal: tuple):
+    """Break a goal into actionable steps using AI."""
+    from orbit.planner import plan_goal
+    plan_goal(" ".join(goal))
+
+
+@main.command("audit")
+def audit_project():
+    """Score current project's loop readiness (0-100)."""
+    from orbit.audit import audit_project
+    audit_project()
+
+
+@main.command("context")
+def show_context():
+    """Show current git context (branch, status, changes)."""
+    from orbit.context import show_context
+    show_context()
+
+
+@main.command("state")
+def show_state():
+    """Show orbit loop state (history, budget, plans)."""
+    from orbit.state import show_state
+    show_state()
