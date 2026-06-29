@@ -142,6 +142,8 @@ extra_javascript:
 nav:
   - Home:
       - index.md
+      - Philosophy: philosophy.md
+      - Capabilities: capabilities.md
       - Changelog: changelog.md
       - Tags: tags.md
   - Getting Started:
@@ -207,3 +209,5 @@ nav:
       - Development Setup: contributing/development.md
       - Code Style: contributing/code-style.md
       - Testing: contributing/testing.md
+  - orbit CLI:
+      - Guide & Testing: orbit-guide.md
