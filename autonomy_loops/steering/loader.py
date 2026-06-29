@@ -11,12 +11,9 @@ Each layer adds to the system prompt, with later layers taking precedence.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from typing import Any
 
 from autonomy_loops.config import Config
-
 
 # Default paths relative to package installation
 _PACKAGE_DIR = Path(__file__).parent.parent.parent

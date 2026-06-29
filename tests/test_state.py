@@ -2,7 +2,7 @@
 
 import pytest
 
-from autonomy_loops.state import AgentState, InvalidTransitionError, StateMachine, StateTransition
+from autonomy_loops.state import AgentState, InvalidTransitionError, StateMachine
 
 
 class TestStateMachine:

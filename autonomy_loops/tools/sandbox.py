@@ -8,14 +8,13 @@ from __future__ import annotations
 
 import asyncio
 import os
-import shlex
 from dataclasses import dataclass
-from typing import Any
 
 
 @dataclass
 class SandboxConfig:
     """Configuration for sandboxed execution."""
+
     enabled: bool = True
     timeout_seconds: int = 30
     max_output_bytes: int = 1_000_000  # 1MB
@@ -27,6 +26,7 @@ class SandboxConfig:
 @dataclass
 class ExecutionResult:
     """Result of a sandboxed command execution."""
+
     stdout: str
     stderr: str
     exit_code: int
@@ -96,7 +96,7 @@ class Sandbox:
                 exit_code=process.returncode or 0,
             )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             process.kill()
             return ExecutionResult(
                 stdout="",

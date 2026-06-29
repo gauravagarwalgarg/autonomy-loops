@@ -1,13 +1,10 @@
 """Tests for the Agent class."""
 
-import asyncio
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
 
 from autonomy_loops.agent import Agent, AgentResult
 from autonomy_loops.config import Config
-from autonomy_loops.providers.base import LLMMessage, LLMProvider, LLMResponse
+from autonomy_loops.providers.base import LLMProvider, LLMResponse
 from autonomy_loops.state import AgentState
 
 
@@ -16,7 +13,10 @@ class MockProvider(LLMProvider):
 
     def __init__(self, responses: list[LLMResponse] | None = None):
         self._responses = responses or [
-            LLMResponse(content="Task completed successfully.", usage={"prompt_tokens": 100, "completion_tokens": 50})
+            LLMResponse(
+                content="Task completed successfully.",
+                usage={"prompt_tokens": 100, "completion_tokens": 50},
+            )
         ]
         self._call_count = 0
 
@@ -64,13 +64,15 @@ class TestAgent:
         # Provider that always requests tool calls (would loop forever)
         from autonomy_loops.providers.base import ToolCall
 
-        infinite_provider = MockProvider(responses=[
-            LLMResponse(
-                content="",
-                tool_calls=[ToolCall(id="1", name="nonexistent", arguments={})],
-                usage={"prompt_tokens": 10, "completion_tokens": 10},
-            )
-        ])
+        infinite_provider = MockProvider(
+            responses=[
+                LLMResponse(
+                    content="",
+                    tool_calls=[ToolCall(id="1", name="nonexistent", arguments={})],
+                    usage={"prompt_tokens": 10, "completion_tokens": 10},
+                )
+            ]
+        )
         config.policy.max_iterations = 3
         agent = Agent(role="developer", mode="code", provider=infinite_provider, config=config)
         result = await agent.run("Do something")

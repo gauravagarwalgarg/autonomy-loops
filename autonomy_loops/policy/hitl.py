@@ -8,13 +8,15 @@ from __future__ import annotations
 
 import asyncio
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Callable, Awaitable
+from enum import StrEnum
+from typing import Any
 
 
-class ApprovalStatus(str, Enum):
+class ApprovalStatus(StrEnum):
     """Status of an approval request."""
+
     PENDING = "pending"
     APPROVED = "approved"
     REJECTED = "rejected"
@@ -24,6 +26,7 @@ class ApprovalStatus(str, Enum):
 @dataclass
 class ApprovalRequest:
     """A request for human approval."""
+
     id: str
     agent_id: str
     action_type: str  # tool_call, state_transition, etc.
@@ -71,7 +74,7 @@ class HITLGate:
                 self._handler(request),
                 timeout=self._timeout,
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             status = ApprovalStatus.TIMED_OUT
 
         request.status = status
@@ -81,15 +84,15 @@ class HITLGate:
     @staticmethod
     async def _default_cli_handler(request: ApprovalRequest) -> ApprovalStatus:
         """Default handler: prompt on CLI for approval."""
-        print(f"\n{'='*60}")
-        print(f"  APPROVAL REQUIRED")
-        print(f"{'='*60}")
+        print(f"\n{'=' * 60}")
+        print("  APPROVAL REQUIRED")
+        print(f"{'=' * 60}")
         print(f"  Agent: {request.agent_id}")
         print(f"  Action: {request.action_type}")
         print(f"  Description: {request.description}")
         if request.context:
             print(f"  Context: {request.context}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         # Run input in thread to not block event loop
         loop = asyncio.get_event_loop()

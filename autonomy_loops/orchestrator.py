@@ -26,6 +26,7 @@ logger = get_logger(__name__)
 @dataclass
 class PipelineStep:
     """A single step in a multi-agent pipeline."""
+
     name: str
     role: str
     mode: str
@@ -40,6 +41,7 @@ class PipelineStep:
 @dataclass
 class PipelineResult:
     """Aggregated result of a full pipeline execution."""
+
     success: bool
     steps: dict[str, AgentResult]
     elapsed_seconds: float
@@ -74,7 +76,7 @@ class Orchestrator:
         config: Config | None = None,
         providers: dict[str, LLMProvider] | None = None,
         tools: ToolRegistry | None = None,
-    ) -> "Orchestrator":
+    ) -> Orchestrator:
         """Load a pipeline definition from YAML.
 
         Pipeline YAML format:
@@ -105,17 +107,19 @@ class Orchestrator:
         raw = yaml.safe_load(pipeline_path.read_text(encoding="utf-8"))
         steps = []
         for step_def in raw.get("steps", []):
-            steps.append(PipelineStep(
-                name=step_def["name"],
-                role=step_def.get("role", "developer"),
-                mode=step_def.get("mode", "code"),
-                task_template=step_def.get("task", ""),
-                depends_on=step_def.get("depends_on", []),
-                tools=step_def.get("tools", []),
-                provider_override=step_def.get("provider"),
-                model_override=step_def.get("model"),
-                max_iterations=step_def.get("max_iterations"),
-            ))
+            steps.append(
+                PipelineStep(
+                    name=step_def["name"],
+                    role=step_def.get("role", "developer"),
+                    mode=step_def.get("mode", "code"),
+                    task_template=step_def.get("task", ""),
+                    depends_on=step_def.get("depends_on", []),
+                    tools=step_def.get("tools", []),
+                    provider_override=step_def.get("provider"),
+                    model_override=step_def.get("model"),
+                    max_iterations=step_def.get("max_iterations"),
+                )
+            )
 
         return cls(steps=steps, config=config, providers=providers, tools=tools)
 
@@ -142,8 +146,8 @@ class Orchestrator:
 
             layer_results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            for step, result in zip(layer, layer_results):
-                if isinstance(result, Exception):
+            for step, result in zip(layer, layer_results, strict=False):
+                if isinstance(result, BaseException):
                     logger.error("step_failed", step=step.name, error=str(result))
                     results[step.name] = AgentResult(
                         success=False,

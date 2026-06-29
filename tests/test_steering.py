@@ -1,7 +1,5 @@
 """Tests for the steering loader."""
 
-from pathlib import Path
-
 import pytest
 
 from autonomy_loops.config import Config, SteeringConfig
@@ -58,10 +56,12 @@ class TestSteeringLoader:
 
     def test_loads_styles(self, steering_dir):
         styles_dir = steering_dir / "styles"
-        config = Config(steering=SteeringConfig(
-            mode="code",
-            styles_dir=str(styles_dir),
-        ))
+        config = Config(
+            steering=SteeringConfig(
+                mode="code",
+                styles_dir=str(styles_dir),
+            )
+        )
         loader = SteeringLoader(config, base_dir=steering_dir)
         parts = loader.load(mode="code")
         assert any("Team Rules" in p for p in parts)

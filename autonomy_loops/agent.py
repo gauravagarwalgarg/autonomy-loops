@@ -8,13 +8,12 @@ via OpenTelemetry.
 
 from __future__ import annotations
 
-import asyncio
 import time
 from dataclasses import dataclass, field
 from typing import Any
 
 from autonomy_loops.config import Config
-from autonomy_loops.providers.base import LLMMessage, LLMProvider, LLMResponse
+from autonomy_loops.providers.base import LLMMessage, LLMProvider, LLMResponse, ToolCall
 from autonomy_loops.state import AgentState, StateMachine
 from autonomy_loops.steering.loader import SteeringLoader
 from autonomy_loops.telemetry.logger import get_logger
@@ -26,6 +25,7 @@ logger = get_logger(__name__)
 @dataclass
 class AgentResult:
     """Final result of an agent execution."""
+
     success: bool
     output: str
     iterations: int
@@ -122,7 +122,9 @@ class Agent:
                     results = await self._execute_tools(response.tool_calls)
 
                     # Observe: feed results back
-                    self._state_machine.transition(AgentState.OBSERVING, reason="tool_results_ready")
+                    self._state_machine.transition(
+                        AgentState.OBSERVING, reason="tool_results_ready"
+                    )
                     self._append_tool_results(response, results)
 
                     # Reflect: decide next step
@@ -184,15 +186,17 @@ class Agent:
         self._total_tokens += response.usage.get("completion_tokens", 0)
 
         # Append assistant response to history
-        self._messages.append(LLMMessage(
-            role="assistant",
-            content=response.content,
-            tool_calls=response.tool_calls,
-        ))
+        self._messages.append(
+            LLMMessage(
+                role="assistant",
+                content=response.content,
+                tool_calls=response.tool_calls,
+            )
+        )
 
         return response
 
-    async def _execute_tools(self, tool_calls: list) -> list[dict[str, Any]]:
+    async def _execute_tools(self, tool_calls: list[ToolCall]) -> list[dict[str, Any]]:
         """Execute tool calls and return results."""
         results = []
         for tc in tool_calls:
@@ -211,11 +215,13 @@ class Agent:
     def _append_tool_results(self, response: LLMResponse, results: list[dict[str, Any]]) -> None:
         """Append tool results to conversation history."""
         for result in results:
-            self._messages.append(LLMMessage(
-                role="tool",
-                content=result["output"],
-                tool_call_id=result["tool_call_id"],
-            ))
+            self._messages.append(
+                LLMMessage(
+                    role="tool",
+                    content=result["output"],
+                    tool_call_id=result["tool_call_id"],
+                )
+            )
 
 
 def _format_context(context: dict[str, Any]) -> str:

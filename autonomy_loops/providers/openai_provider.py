@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
 from autonomy_loops.config import ProviderConfig
 from autonomy_loops.providers.base import (
@@ -95,12 +96,15 @@ class OpenAIProvider(LLMProvider):
         tool_calls = []
         if choice.message.tool_calls:
             import json
+
             for tc in choice.message.tool_calls:
-                tool_calls.append(ToolCall(
-                    id=tc.id,
-                    name=tc.function.name,
-                    arguments=json.loads(tc.function.arguments),
-                ))
+                tool_calls.append(
+                    ToolCall(
+                        id=tc.id,
+                        name=tc.function.name,
+                        arguments=json.loads(tc.function.arguments),
+                    )
+                )
 
         return LLMResponse(
             content=choice.message.content or "",

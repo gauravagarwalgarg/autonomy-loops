@@ -8,12 +8,13 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 
-class AgentState(str, Enum):
+class AgentState(StrEnum):
     """Agent lifecycle states."""
+
     IDLE = "idle"
     PLANNING = "planning"
     ACTING = "acting"
@@ -29,11 +30,32 @@ class AgentState(str, Enum):
 # Valid state transitions
 _TRANSITIONS: dict[AgentState, set[AgentState]] = {
     AgentState.IDLE: {AgentState.PLANNING, AgentState.CANCELLED},
-    AgentState.PLANNING: {AgentState.ACTING, AgentState.WAITING_APPROVAL, AgentState.FAILED, AgentState.CANCELLED},
-    AgentState.ACTING: {AgentState.OBSERVING, AgentState.WAITING_APPROVAL, AgentState.FAILED, AgentState.CANCELLED},
+    AgentState.PLANNING: {
+        AgentState.ACTING,
+        AgentState.WAITING_APPROVAL,
+        AgentState.FAILED,
+        AgentState.CANCELLED,
+    },
+    AgentState.ACTING: {
+        AgentState.OBSERVING,
+        AgentState.WAITING_APPROVAL,
+        AgentState.FAILED,
+        AgentState.CANCELLED,
+    },
     AgentState.OBSERVING: {AgentState.REFLECTING, AgentState.FAILED, AgentState.CANCELLED},
-    AgentState.REFLECTING: {AgentState.PLANNING, AgentState.DELEGATING, AgentState.COMPLETED, AgentState.FAILED, AgentState.CANCELLED},
-    AgentState.WAITING_APPROVAL: {AgentState.ACTING, AgentState.PLANNING, AgentState.CANCELLED, AgentState.FAILED},
+    AgentState.REFLECTING: {
+        AgentState.PLANNING,
+        AgentState.DELEGATING,
+        AgentState.COMPLETED,
+        AgentState.FAILED,
+        AgentState.CANCELLED,
+    },
+    AgentState.WAITING_APPROVAL: {
+        AgentState.ACTING,
+        AgentState.PLANNING,
+        AgentState.CANCELLED,
+        AgentState.FAILED,
+    },
     AgentState.DELEGATING: {AgentState.OBSERVING, AgentState.FAILED, AgentState.CANCELLED},
     AgentState.COMPLETED: set(),
     AgentState.FAILED: set(),
@@ -44,6 +66,7 @@ _TRANSITIONS: dict[AgentState, set[AgentState]] = {
 @dataclass
 class StateTransition:
     """Record of a state transition for audit trail."""
+
     from_state: AgentState
     to_state: AgentState
     timestamp: float = field(default_factory=time.time)

@@ -23,16 +23,20 @@ def create_provider(name: str, config: Config) -> LLMProvider:
 
     if name == "openai":
         from autonomy_loops.providers.openai_provider import OpenAIProvider
+
         return OpenAIProvider(provider_config)
     elif name == "anthropic":
         from autonomy_loops.providers.anthropic_provider import AnthropicProvider
+
         return AnthropicProvider(provider_config)
     elif name == "local":
         from autonomy_loops.providers.local_provider import LocalProvider
+
         return LocalProvider(provider_config)
     elif name == "bedrock":
         # Bedrock uses the OpenAI-compatible interface with different base URL
         from autonomy_loops.providers.openai_provider import OpenAIProvider
+
         return OpenAIProvider(provider_config)
     else:
         raise ValueError(f"Unknown provider: {name}. Available: openai, anthropic, bedrock, local")

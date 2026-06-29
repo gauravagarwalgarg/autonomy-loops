@@ -34,12 +34,14 @@ class TestToolRegistry:
     @pytest.mark.asyncio
     async def test_execute_sync_handler(self):
         registry = ToolRegistry()
-        registry.register(Tool(
-            name="add",
-            description="Add two numbers",
-            parameters={},
-            handler=lambda a, b: a + b,
-        ))
+        registry.register(
+            Tool(
+                name="add",
+                description="Add two numbers",
+                parameters={},
+                handler=lambda a, b: a + b,
+            )
+        )
         result = await registry.execute("add", {"a": 2, "b": 3})
         assert result == 5
 
@@ -50,12 +52,14 @@ class TestToolRegistry:
         async def async_fetch(url: str) -> str:
             return f"fetched {url}"
 
-        registry.register(Tool(
-            name="fetch",
-            description="Fetch URL",
-            parameters={},
-            handler=async_fetch,
-        ))
+        registry.register(
+            Tool(
+                name="fetch",
+                description="Fetch URL",
+                parameters={},
+                handler=async_fetch,
+            )
+        )
         result = await registry.execute("fetch", {"url": "https://example.com"})
         assert result == "fetched https://example.com"
 
@@ -67,12 +71,14 @@ class TestToolRegistry:
 
     def test_get_tool_definitions(self):
         registry = ToolRegistry()
-        registry.register(Tool(
-            name="test_tool",
-            description="A test tool",
-            parameters={"type": "object", "properties": {"x": {"type": "string"}}},
-            handler=lambda x: x,
-        ))
+        registry.register(
+            Tool(
+                name="test_tool",
+                description="A test tool",
+                parameters={"type": "object", "properties": {"x": {"type": "string"}}},
+                handler=lambda x: x,
+            )
+        )
         defs = registry.get_tool_definitions()
         assert len(defs) == 1
         assert defs[0]["type"] == "function"

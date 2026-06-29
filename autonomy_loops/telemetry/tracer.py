@@ -6,13 +6,10 @@ and LLM provider requests for performance analysis and debugging.
 
 from __future__ import annotations
 
-from typing import Any
-
 from opentelemetry import trace
+from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
-from opentelemetry.sdk.resources import Resource
-
 
 _initialized = False
 
@@ -41,6 +38,7 @@ def init_tracing(
     elif exporter == "otlp":
         try:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+
             otlp_exporter = OTLPSpanExporter(endpoint=endpoint)
             provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
         except ImportError:

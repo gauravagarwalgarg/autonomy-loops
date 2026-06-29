@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Python artifacts
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+dist/
+build/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing/CI
+.github/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+coverage.xml
+.coverage
+
+# Docs (built separately)
+site/
+docs/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Local config (contains secrets)
+autonomy-loops.yaml
+.env
+
+# Kiro
+.kiro/
+
+# OS
+.DS_Store
+Thumbs.db

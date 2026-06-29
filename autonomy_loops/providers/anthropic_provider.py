@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
 from autonomy_loops.config import ProviderConfig
 from autonomy_loops.providers.base import (
@@ -46,16 +47,18 @@ class AnthropicProvider(LLMProvider):
             if msg.role == "system":
                 system_prompt += msg.content + "\n"
             elif msg.role == "tool":
-                conversation.append({
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "tool_result",
-                            "tool_use_id": msg.tool_call_id,
-                            "content": msg.content,
-                        }
-                    ],
-                })
+                conversation.append(
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "tool_result",
+                                "tool_use_id": msg.tool_call_id,
+                                "content": msg.content,
+                            }
+                        ],
+                    }
+                )
             else:
                 conversation.append({"role": msg.role, "content": msg.content})
 
@@ -68,11 +71,13 @@ class AnthropicProvider(LLMProvider):
         anthropic_tools = []
         for tool in tools:
             func = tool.get("function", tool)
-            anthropic_tools.append({
-                "name": func["name"],
-                "description": func.get("description", ""),
-                "input_schema": func.get("parameters", {"type": "object", "properties": {}}),
-            })
+            anthropic_tools.append(
+                {
+                    "name": func["name"],
+                    "description": func.get("description", ""),
+                    "input_schema": func.get("parameters", {"type": "object", "properties": {}}),
+                }
+            )
         return anthropic_tools
 
     async def complete(
@@ -115,11 +120,13 @@ class AnthropicProvider(LLMProvider):
             if block.type == "text":
                 content_parts.append(block.text)
             elif block.type == "tool_use":
-                tool_calls.append(ToolCall(
-                    id=block.id,
-                    name=block.name,
-                    arguments=block.input,
-                ))
+                tool_calls.append(
+                    ToolCall(
+                        id=block.id,
+                        name=block.name,
+                        arguments=block.input,
+                    )
+                )
 
         return LLMResponse(
             content="\n".join(content_parts),

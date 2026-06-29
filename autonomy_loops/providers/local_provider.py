@@ -5,7 +5,8 @@ Connects to any OpenAI-compatible local inference server.
 
 from __future__ import annotations
 
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
 import httpx
 
@@ -72,12 +73,15 @@ class LocalProvider(LLMProvider):
         tool_calls = []
         if choice.get("message", {}).get("tool_calls"):
             import json
+
             for tc in choice["message"]["tool_calls"]:
-                tool_calls.append(ToolCall(
-                    id=tc["id"],
-                    name=tc["function"]["name"],
-                    arguments=json.loads(tc["function"]["arguments"]),
-                ))
+                tool_calls.append(
+                    ToolCall(
+                        id=tc["id"],
+                        name=tc["function"]["name"],
+                        arguments=json.loads(tc["function"]["arguments"]),
+                    )
+                )
 
         usage = data.get("usage", {})
         return LLMResponse(
@@ -121,6 +125,7 @@ class LocalProvider(LLMProvider):
                     async for line in resp.aiter_lines():
                         if line.startswith("data: ") and line != "data: [DONE]":
                             import json
+
                             chunk = json.loads(line[6:])
                             delta = chunk.get("choices", [{}])[0].get("delta", {})
                             if delta.get("content"):

@@ -6,9 +6,8 @@ whether to allow, block, or require approval for operations.
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from autonomy_loops.telemetry.logger import get_logger
@@ -16,8 +15,9 @@ from autonomy_loops.telemetry.logger import get_logger
 logger = get_logger(__name__)
 
 
-class PolicyDecision(str, Enum):
+class PolicyDecision(StrEnum):
     """Result of a policy evaluation."""
+
     ALLOW = "allow"
     DENY = "deny"
     REQUIRE_APPROVAL = "require_approval"
@@ -27,6 +27,7 @@ class PolicyDecision(str, Enum):
 @dataclass
 class PolicyRule:
     """A single policy rule."""
+
     name: str
     trigger: str  # tool_call | llm_call | state_transition
     condition: str  # Simple expression (evaluated safely)
@@ -38,6 +39,7 @@ class PolicyRule:
 @dataclass
 class PolicyEvaluation:
     """Result of evaluating all policies against an action."""
+
     decision: PolicyDecision
     triggered_rules: list[PolicyRule]
     messages: list[str]
@@ -54,18 +56,20 @@ class PolicyEngine:
         self._rules = rules or []
 
     @classmethod
-    def from_config(cls, policy_config: dict[str, Any]) -> "PolicyEngine":
+    def from_config(cls, policy_config: dict[str, Any]) -> PolicyEngine:
         """Create engine from policy config dict."""
         rules = []
         for rule_def in policy_config.get("rules", []):
-            rules.append(PolicyRule(
-                name=rule_def["name"],
-                trigger=rule_def.get("trigger", "tool_call"),
-                condition=rule_def.get("condition", ""),
-                action=PolicyDecision(rule_def.get("action", "allow")),
-                message=rule_def.get("message", ""),
-                approvers=rule_def.get("approvers", []),
-            ))
+            rules.append(
+                PolicyRule(
+                    name=rule_def["name"],
+                    trigger=rule_def.get("trigger", "tool_call"),
+                    condition=rule_def.get("condition", ""),
+                    action=PolicyDecision(rule_def.get("action", "allow")),
+                    message=rule_def.get("message", ""),
+                    approvers=rule_def.get("approvers", []),
+                )
+            )
         return cls(rules=rules)
 
     def evaluate(

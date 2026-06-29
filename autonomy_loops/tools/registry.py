@@ -8,17 +8,21 @@ discovery (for LLM tool definitions) and execution (with sandboxing).
 from __future__ import annotations
 
 import inspect
-from dataclasses import dataclass, field
-from typing import Any, Callable, Awaitable
+from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
+from typing import Any, TypeAlias
+
+_AnyCallable: TypeAlias = Callable[..., Any]
 
 
 @dataclass
 class Tool:
     """A registered tool that an agent can invoke."""
+
     name: str
     description: str
     parameters: dict[str, Any]  # JSON Schema for parameters
-    handler: Callable[..., Awaitable[Any]] | Callable[..., Any]
+    handler: Callable[..., Awaitable[Any]] | _AnyCallable
     category: str = "general"  # file, shell, web, code, general
     requires_approval: bool = False
 
@@ -52,7 +56,7 @@ class ToolRegistry:
         parameters: dict[str, Any] | None = None,
         category: str = "general",
         requires_approval: bool = False,
-    ) -> Callable:
+    ) -> Callable[[_AnyCallable], _AnyCallable]:
         """Decorator to register a function as a tool.
 
         Usage:
@@ -60,7 +64,8 @@ class ToolRegistry:
             async def read_file(path: str) -> str:
                 ...
         """
-        def decorator(fn: Callable) -> Callable:
+
+        def decorator(fn: _AnyCallable) -> _AnyCallable:
             params = parameters or self._infer_parameters(fn)
             tool = Tool(
                 name=name,
@@ -72,6 +77,7 @@ class ToolRegistry:
             )
             self._tools[name] = tool
             return fn
+
         return decorator
 
     def get(self, name: str) -> Tool | None:
@@ -104,7 +110,7 @@ class ToolRegistry:
             return handler(**arguments)
 
     @staticmethod
-    def _infer_parameters(fn: Callable) -> dict[str, Any]:
+    def _infer_parameters(fn: _AnyCallable) -> dict[str, Any]:
         """Infer JSON Schema parameters from function signature."""
         sig = inspect.signature(fn)
         properties: dict[str, Any] = {}

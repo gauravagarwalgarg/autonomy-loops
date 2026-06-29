@@ -14,7 +14,6 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, Field
 
-
 # --- Environment variable interpolation ---
 
 _ENV_PATTERN = re.compile(r"\$\{([A-Z_][A-Z0-9_]*)\}")
@@ -23,9 +22,11 @@ _ENV_PATTERN = re.compile(r"\$\{([A-Z_][A-Z0-9_]*)\}")
 def _interpolate_env(value: Any) -> Any:
     """Recursively interpolate ${ENV_VAR} references in config values."""
     if isinstance(value, str):
-        def replacer(match: re.Match) -> str:
+
+        def replacer(match: re.Match[str]) -> str:
             var_name = match.group(1)
             return os.environ.get(var_name, "")
+
         return _ENV_PATTERN.sub(replacer, value)
     if isinstance(value, dict):
         return {k: _interpolate_env(v) for k, v in value.items()}
@@ -36,8 +37,10 @@ def _interpolate_env(value: Any) -> Any:
 
 # --- Pydantic models ---
 
+
 class ProviderConfig(BaseModel):
     """LLM provider configuration."""
+
     api_key: str = ""
     base_url: str | None = None
     default_model: str = ""
@@ -48,6 +51,7 @@ class ProviderConfig(BaseModel):
 
 class PolicyConfig(BaseModel):
     """Agent governance policy."""
+
     hitl_mode: str = "none"  # none | notify | approval_required
     max_iterations: int = 50
     cost_limit_usd: float = 10.0
@@ -57,6 +61,7 @@ class PolicyConfig(BaseModel):
 
 class TelemetryConfig(BaseModel):
     """Observability configuration."""
+
     enabled: bool = True
     exporter: str = "otlp"  # otlp | console | none
     endpoint: str = "http://localhost:4317"
@@ -67,13 +72,15 @@ class TelemetryConfig(BaseModel):
 
 class SecurityConfig(BaseModel):
     """Security and access control."""
+
     rbac_enabled: bool = False
-    token_vault: str = "env"  # env | aws-secrets | vault | azure-keyvault
+    token_vault: str = "env"  # env | aws-secrets | vault | azure-keyvault # noqa: S105
     sandbox_tools: bool = True
 
 
 class SteeringConfig(BaseModel):
     """Steering layer configuration."""
+
     mode: str = "code"
     role: str = "developer"
     plugins: list[str] = Field(default_factory=list)
@@ -82,12 +89,14 @@ class SteeringConfig(BaseModel):
 
 class ProjectConfig(BaseModel):
     """Project metadata."""
+
     name: str = "unnamed"
     languages: list[str] = Field(default_factory=list)
 
 
 class Config(BaseModel):
     """Root configuration for AutonomyLoops."""
+
     project: ProjectConfig = Field(default_factory=ProjectConfig)
     steering: SteeringConfig = Field(default_factory=SteeringConfig)
     providers: dict[str, ProviderConfig] = Field(default_factory=dict)
@@ -97,7 +106,7 @@ class Config(BaseModel):
     security: SecurityConfig = Field(default_factory=SecurityConfig)
 
     @classmethod
-    def load(cls, path: str | Path | None = None) -> "Config":
+    def load(cls, path: str | Path | None = None) -> Config:
         """Load configuration from YAML file with env interpolation.
 
         Search order:
@@ -115,11 +124,13 @@ class Config(BaseModel):
         if env_path:
             search_paths.append(Path(env_path))
 
-        search_paths.extend([
-            Path("autonomy-loops.yaml"),
-            Path("autonomy-loops.yml"),
-            Path.home() / ".config" / "autonomy-loops" / "config.yaml",
-        ])
+        search_paths.extend(
+            [
+                Path("autonomy-loops.yaml"),
+                Path("autonomy-loops.yml"),
+                Path.home() / ".config" / "autonomy-loops" / "config.yaml",
+            ]
+        )
 
         for candidate in search_paths:
             if candidate.exists():
@@ -129,7 +140,7 @@ class Config(BaseModel):
         return cls()
 
     @classmethod
-    def _from_file(cls, path: Path) -> "Config":
+    def _from_file(cls, path: Path) -> Config:
         """Parse a YAML config file."""
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         interpolated = _interpolate_env(raw)

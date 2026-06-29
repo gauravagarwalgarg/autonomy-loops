@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import sys
+from typing import Any
 
 import click
 
@@ -16,9 +17,8 @@ from autonomy_loops import __version__
 
 @click.group()
 @click.version_option(version=__version__, prog_name="autonomy-loops")
-def main():
+def main() -> None:
     """AutonomyLoops Multi-agent orchestration framework."""
-    pass
 
 
 @main.command()
@@ -28,7 +28,14 @@ def main():
 @click.option("--model", default=None, help="Model override")
 @click.option("--config", "-c", default=None, help="Config file path")
 @click.option("--task", "-t", default=None, help="Task description (or reads from stdin)")
-def run(role: str, mode: str, provider: str | None, model: str | None, config: str | None, task: str | None):
+def run(
+    role: str,
+    mode: str,
+    provider: str | None,
+    model: str | None,
+    config: str | None,
+    task: str | None,
+) -> None:
     """Run a single agent with the given role and mode."""
     from autonomy_loops.config import Config
 
@@ -46,41 +53,42 @@ def run(role: str, mode: str, provider: str | None, model: str | None, config: s
     asyncio.run(_run_agent(cfg, role, mode, effective_provider, model, task))
 
 
-async def _run_agent(cfg, role: str, mode: str, provider_name: str, model: str | None, task: str):
+async def _run_agent(
+    cfg: Any, role: str, mode: str, provider_name: str, model: str | None, task: str
+) -> None:
     """Internal: create provider and run agent."""
-    from autonomy_loops.agent import Agent
     from autonomy_loops._factory import create_provider
+    from autonomy_loops.agent import Agent
 
     provider = create_provider(provider_name, cfg)
     agent = Agent(role=role, mode=mode, provider=provider, config=cfg)
     result = await agent.run(task)
 
-    click.echo(f"\n{'='*60}")
+    click.echo(f"\n{'=' * 60}")
     click.echo(f"Result: {'SUCCESS' if result.success else 'FAILED'}")
     click.echo(f"Iterations: {result.iterations}")
     click.echo(f"Tokens: {result.total_tokens}")
     click.echo(f"Time: {result.elapsed_seconds:.2f}s")
-    click.echo(f"{'='*60}\n")
+    click.echo(f"{'=' * 60}\n")
     click.echo(result.output)
 
 
 @main.command()
 @click.option("--pipeline", "-p", required=True, help="Pipeline YAML file")
 @click.option("--config", "-c", default=None, help="Config file path")
-def orchestrate(pipeline: str, config: str | None):
+def orchestrate(pipeline: str, config: str | None) -> None:
     """Run a multi-agent pipeline."""
     from autonomy_loops.config import Config
-    from autonomy_loops.orchestrator import Orchestrator
 
     cfg = Config.load(config)
     click.echo(f"Running pipeline: {pipeline}")
     asyncio.run(_run_pipeline(cfg, pipeline))
 
 
-async def _run_pipeline(cfg, pipeline_path: str):
+async def _run_pipeline(cfg: Any, pipeline_path: str) -> None:
     """Internal: run orchestrator pipeline."""
-    from autonomy_loops.orchestrator import Orchestrator
     from autonomy_loops._factory import create_all_providers
+    from autonomy_loops.orchestrator import Orchestrator
 
     providers = create_all_providers(cfg)
     orch = Orchestrator.from_pipeline(pipeline_path, config=cfg, providers=providers)
@@ -93,13 +101,15 @@ async def _run_pipeline(cfg, pipeline_path: str):
 
     for name, step_result in result.steps.items():
         status = "✓" if step_result.success else "✗"
-        click.echo(f"  {status} {name} ({step_result.iterations} iters, {step_result.total_tokens} tokens)")
+        click.echo(
+            f"  {status} {name} ({step_result.iterations} iters, {step_result.total_tokens} tokens)"
+        )
 
 
 @main.command()
 @click.option("--port", default=8091, help="Server port")
-@click.option("--host", default="0.0.0.0", help="Server host")
-def serve(port: int, host: str):
+@click.option("--host", default="0.0.0.0", help="Server host")  # noqa: S104
+def serve(port: int, host: str) -> None:
     """Start the AutonomyLoops dashboard server."""
     import http.server
     import os
@@ -107,7 +117,7 @@ def serve(port: int, host: str):
     directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     class Handler(http.server.SimpleHTTPRequestHandler):
-        def __init__(self, *args, **kwargs):
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
             super().__init__(*args, directory=directory, **kwargs)
 
     server = http.server.HTTPServer((host, port), Handler)
@@ -120,7 +130,7 @@ def serve(port: int, host: str):
 
 
 @main.command()
-def init():
+def init() -> None:
     """Initialize AutonomyLoops in the current project."""
     from pathlib import Path
 
@@ -176,58 +186,65 @@ telemetry:
     click.echo("Created styles/ directory with common.md")
 
 
-if __name__ == "__main__":
-    main()
-
-
 # =============================================================================
 # ORBIT COMMANDS Lightweight second-brain agent skills
 # Merged from orbit/ package into the main CLI for a single entry point.
 # =============================================================================
 
+
 @main.command("skill")
 @click.argument("skill_name")
 @click.option("--input", "-i", "input_text", default=None, help="Input text (default: stdin)")
 @click.option("--model", "-m", default="", help="Override model")
-def skill_run(skill_name: str, input_text: str | None, model: str):
+def skill_run(skill_name: str, input_text: str | None, model: str) -> None:
     """Run an orbit skill (prompt template + LLM). Alias: orbit run <skill>"""
     from orbit.runner import run_skill
+
     text = input_text or (sys.stdin.read() if not sys.stdin.isatty() else "")
     output = run_skill(skill_name, text, model)
     click.echo(output)
 
 
 @main.command("skills")
-def skills_list():
+def skills_list() -> None:
     """List available orbit skills."""
     from orbit.runner import list_skills
+
     list_skills()
 
 
 @main.command("plan")
 @click.argument("goal", nargs=-1, required=True)
-def plan_goal(goal: tuple):
+def plan_goal(goal: tuple[str, ...]) -> None:
     """Break a goal into actionable steps using AI."""
-    from orbit.planner import plan_goal
-    plan_goal(" ".join(goal))
+    from orbit.planner import plan_goal as _plan
+
+    _plan(" ".join(goal))
 
 
 @main.command("audit")
-def audit_project():
+def audit_project() -> None:
     """Score current project's loop readiness (0-100)."""
-    from orbit.audit import audit_project
-    audit_project()
+    from orbit.audit import audit_project as _audit
+
+    _audit()
 
 
 @main.command("context")
-def show_context():
+def show_context() -> None:
     """Show current git context (branch, status, changes)."""
-    from orbit.context import show_context
-    show_context()
+    from orbit.context import show_context as _ctx
+
+    _ctx()
 
 
 @main.command("state")
-def show_state():
+def show_state() -> None:
     """Show orbit loop state (history, budget, plans)."""
-    from orbit.state import show_state
-    show_state()
+    from orbit.state import show_state as _state
+
+    _state()
+
+
+if __name__ == "__main__":
+    main()

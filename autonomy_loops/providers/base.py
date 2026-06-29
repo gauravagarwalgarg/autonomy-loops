@@ -7,6 +7,7 @@ to work identically regardless of the underlying model backend.
 from __future__ import annotations
 
 import abc
+from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -14,6 +15,7 @@ from typing import Any
 @dataclass
 class LLMMessage:
     """A single message in the conversation."""
+
     role: str  # system | user | assistant | tool
     content: str
     name: str | None = None
@@ -24,6 +26,7 @@ class LLMMessage:
 @dataclass
 class ToolCall:
     """A tool invocation requested by the model."""
+
     id: str
     name: str
     arguments: dict[str, Any]
@@ -32,6 +35,7 @@ class ToolCall:
 @dataclass
 class LLMResponse:
     """Response from an LLM provider."""
+
     content: str
     tool_calls: list[ToolCall] = field(default_factory=list)
     model: str = ""
@@ -42,6 +46,7 @@ class LLMResponse:
 
 class ProviderError(Exception):
     """Base error for provider failures."""
+
     def __init__(self, message: str, provider: str = "", retryable: bool = False) -> None:
         super().__init__(message)
         self.provider = provider
@@ -91,7 +96,7 @@ class LLMProvider(abc.ABC):
         ...
 
     @abc.abstractmethod
-    async def stream(
+    def stream(
         self,
         messages: list[LLMMessage],
         *,
@@ -99,7 +104,7 @@ class LLMProvider(abc.ABC):
         temperature: float = 0.0,
         max_tokens: int = 4096,
         tools: list[dict[str, Any]] | None = None,
-    ):
+    ) -> AsyncIterator[LLMResponse]:
         """Stream a completion response token-by-token.
 
         Yields partial LLMResponse objects as tokens arrive.

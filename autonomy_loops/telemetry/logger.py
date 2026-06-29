@@ -52,7 +52,8 @@ def get_logger(name: str) -> structlog.BoundLogger:
     Returns:
         Structured logger instance.
     """
-    return structlog.get_logger(name)
+    logger: structlog.BoundLogger = structlog.get_logger(name)
+    return logger
 
 
 # Configure with defaults on import
