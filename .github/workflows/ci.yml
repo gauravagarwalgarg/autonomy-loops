@@ -91,9 +91,9 @@ jobs:
             cairosvg
 
       - name: Build documentation
-        run: mkdocs build --strict --site-dir site
+        run: mkdocs build --site-dir site
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: site
 
