@@ -1,23 +1,36 @@
-# AutonomyLoops Full observability stack
-# Includes agent runtime, Redis (state), Jaeger (traces), Prometheus (metrics)
-
-version: "3.9"
+# AutonomyLoops + Orbit Full observability stack
+# Includes agent runtime, Ollama (local LLM), Redis (state), Jaeger (traces), Prometheus (metrics)
 
 services:
   agent:
     build: .
     environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - AUTONOMY_LOOPS_CONFIG=/app/autonomy-loops.yaml
+      - OLLAMA_HOST=http://ollama:11434
     volumes:
       - ./autonomy-loops.yaml:/app/autonomy-loops.yaml:ro
       - ./styles:/app/styles:ro
     depends_on:
       - redis
       - otel-collector
+      - ollama
     networks:
       - autonomy
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    networks:
+      - autonomy
+    deploy:
+      resources:
+        reservations:
+          memory: 4G
 
   redis:
     image: redis:7-alpine
@@ -59,6 +72,7 @@ services:
 
 volumes:
   redis-data:
+  ollama-models:
 
 networks:
   autonomy:

@@ -4,7 +4,7 @@ setup(
     name="orbit-cli",
     version="0.1.0",
     packages=find_packages(),
-    package_data={"orbit": ["skills/*.md"]},
+    package_data={"orbit": ["skills/*.md", "py.typed"]},
     entry_points={"console_scripts": ["orbit=orbit.cli:main"]},
     python_requires=">=3.10",
     install_requires=["pyyaml"],

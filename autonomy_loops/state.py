@@ -32,6 +32,8 @@ _TRANSITIONS: dict[AgentState, set[AgentState]] = {
     AgentState.IDLE: {AgentState.PLANNING, AgentState.CANCELLED},
     AgentState.PLANNING: {
         AgentState.ACTING,
+        AgentState.REFLECTING,
+        AgentState.COMPLETED,
         AgentState.WAITING_APPROVAL,
         AgentState.FAILED,
         AgentState.CANCELLED,

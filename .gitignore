@@ -37,3 +37,9 @@ docker-compose.override.yaml
 # Temporary
 .tmp*
 *.log
+
+# MkDocs build output
+site/
+
+# Kiro IDE
+.kiro/

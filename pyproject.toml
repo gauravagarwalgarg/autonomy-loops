@@ -47,6 +47,7 @@ dev = [
     "pytest-cov>=4.0",
     "ruff>=0.1",
     "mypy>=1.5",
+    "types-PyYAML>=6.0",
     "pre-commit>=3.0",
 ]
 
@@ -79,3 +80,23 @@ asyncio_mode = "auto"
 [tool.mypy]
 python_version = "3.11"
 strict = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = [
+    "orbit",
+    "orbit.*",
+    "yaml",
+    "yaml.*",
+    "openai",
+    "openai.*",
+    "anthropic",
+    "anthropic.*",
+    "structlog",
+    "structlog.*",
+    "opentelemetry",
+    "opentelemetry.*",
+    "httpx",
+    "httpx.*",
+]
+ignore_missing_imports = true
